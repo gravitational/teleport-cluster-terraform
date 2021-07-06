@@ -3,7 +3,7 @@
 // as they are allowed to publish to SSM parameter store,
 // write certificates to encrypted S3 bucket.
 resource "aws_autoscaling_group" "auth" {
-  name                      = "${var.cluster_name}-auth"
+  name                      = "${substr(var.cluster_name,0,16)}-auth"
   max_size                  = 5
   min_size                  = length(var.az_list)
   health_check_grace_period = 300
@@ -44,7 +44,7 @@ resource "aws_launch_configuration" "auth" {
   lifecycle {
     create_before_destroy = true
   }
-  name_prefix                 = "${var.cluster_name}-auth-"
+  name_prefix                 = "${substr(var.cluster_name,0,16)}-auth-"
   image_id                    = data.aws_ami.base.id
   instance_type               = var.auth_instance_type
   user_data                   = templatefile(

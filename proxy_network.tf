@@ -3,7 +3,7 @@
 
 // Proxy SG for instances behind network LB
 resource "aws_security_group" "proxy" {
-  name   = "${var.cluster_name}-proxy"
+  name   = "${substr(var.cluster_name,0,16)}-proxy"
   vpc_id = local.vpc_id
   tags = {
     TeleportCluster = var.cluster_name
@@ -12,7 +12,7 @@ resource "aws_security_group" "proxy" {
 
 // Proxy SG for application LB (ACM)
 resource "aws_security_group" "proxy_acm" {
-  name   = "${var.cluster_name}-proxy-acm"
+  name   = "${substr(var.cluster_name,0,16)}-proxy-acm"
   vpc_id = local.vpc_id
   count  = var.use_acm ? 1 : 0
   tags = {
@@ -164,7 +164,7 @@ resource "aws_lb_listener" "proxy_proxy" {
 // Tunnel endpoint/listener on LB - this is only used with ACM (as
 // Teleport web/tunnel multiplexing can be used with Letsencrypt)
 resource "aws_lb_target_group" "proxy_tunnel_acm" {
-  name     = "${var.cluster_name}-proxy-tunnel"
+  name     = "${substr(var.cluster_name,0,16)}-proxy-tunnel"
   port     = 3024
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -185,7 +185,7 @@ resource "aws_lb_listener" "proxy_tunnel_acm" {
 
 // Proxy is for Kube proxy - jumphost target endpoint.
 resource "aws_lb_target_group" "proxy_kube" {
-  name     = "${var.cluster_name}-proxy-kube"
+  name     = "${substr(var.cluster_name,0,16)}-proxy-kube"
   port     = 3026
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -207,7 +207,7 @@ resource "aws_lb_listener" "proxy_kube" {
 
 // Proxy web target group (using letsencrypt)
 resource "aws_lb_target_group" "proxy_web" {
-  name     = "${var.cluster_name}-proxy-web"
+  name     = "${substr(var.cluster_name,0,16)}-proxy-web"
   port     = 3080
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -220,14 +220,14 @@ resource "aws_lb_listener" "proxy_web" {
   protocol          = "TCP"
 
   default_action {
-    target_group_arn = aws_lb_target_group.proxy_web[0].arn
+    target_group_arn = aws_lb_target_group.proxy_web.arn
     type             = "forward"
   }
 }
 
 // Proxy web target group (using ACM)
 resource "aws_lb_target_group" "proxy_web_acm" {
-  name     = "${var.cluster_name}-proxy-web"
+  name     = "${substr(var.cluster_name,0,16)}-proxy-webacm"
   port     = 3080
   vpc_id   = aws_vpc.teleport.id
   protocol = "HTTPS"
@@ -257,7 +257,7 @@ resource "aws_lb_listener" "proxy_web_acm" {
 // feel free to remove it or replace with something else
 // letsencrypt
 resource "aws_lb_target_group" "proxy_grafana" {
-  name     = "${var.cluster_name}-proxy-grafana"
+  name     = "${substr(var.cluster_name,0,16)}-proxy-grafana"
   port     = 8443
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -278,7 +278,7 @@ resource "aws_lb_listener" "proxy_grafana" {
 
 // ACM
 resource "aws_lb_target_group" "proxy_grafana_acm" {
-  name     = "${var.cluster_name}-proxy-grafana"
+  name     = "${substr(var.cluster_name,0,16)}-proxy-grafana"
   port     = 8444
   vpc_id   = aws_vpc.teleport.id
   protocol = "HTTP"

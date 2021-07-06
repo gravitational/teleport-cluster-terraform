@@ -4,7 +4,7 @@
 
 // letsencrypt
 resource "aws_autoscaling_group" "proxy" {
-  name                      = "${var.cluster_name}-proxy"
+  name                      = "${substr(var.cluster_name,0,16)}-proxy"
   max_size                  = 5
   min_size                  = length(var.az_list)
   health_check_grace_period = 300
@@ -17,7 +17,7 @@ resource "aws_autoscaling_group" "proxy" {
   // Auto scaling group is associated with load balancer
   target_group_arns = [
     aws_lb_target_group.proxy_proxy.arn,
-    aws_lb_target_group.proxy_web[0].arn,
+    aws_lb_target_group.proxy_web.arn,
     aws_lb_target_group.proxy_kube.arn,
   ]
   count             = var.use_acm ? 0 : 1
@@ -47,7 +47,7 @@ resource "aws_autoscaling_group" "proxy" {
 
 // ACM
 resource "aws_autoscaling_group" "proxy_acm" {
-  name                      = "${var.cluster_name}-proxy"
+  name                      = "${substr(var.cluster_name,0,16)}-proxy"
   max_size                  = 5
   min_size                  = length(var.az_list)
   health_check_grace_period = 300
@@ -58,8 +58,10 @@ resource "aws_autoscaling_group" "proxy_acm" {
   vpc_zone_identifier       = [for subnet in aws_subnet.public : subnet.id]
 
   // Auto scaling group is associated with load balancer
+  // The proxy_web ARN is added here to enable the Postgres listener.
   target_group_arns = [
     aws_lb_target_group.proxy_proxy.arn,
+    aws_lb_target_group.proxy_web.arn,
     aws_lb_target_group.proxy_tunnel_acm[0].arn,
     aws_lb_target_group.proxy_web_acm[0].arn,
     aws_lb_target_group.proxy_kube.arn,
@@ -93,7 +95,7 @@ resource "aws_launch_configuration" "proxy" {
   lifecycle {
     create_before_destroy = true
   }
-  name_prefix                 = "${var.cluster_name}-proxy-"
+  name_prefix                 = "${substr(var.cluster_name,0,16)}-proxy-"
   image_id                    = var.ami_id
   instance_type               = var.proxy_instance_type
   user_data                   = templatefile(

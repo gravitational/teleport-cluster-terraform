@@ -44,7 +44,7 @@ resource "aws_route_table_association" "auth" {
 // Security groups for auth servers only allow access to 3025 port from
 // public subnets, and not the internet
 resource "aws_security_group" "auth" {
-  name   = "${var.cluster_name}-auth"
+  name   = "${substr(var.cluster_name,0,16)}-auth"
   vpc_id = local.vpc_id
   tags = {
     TeleportCluster = var.cluster_name
@@ -123,7 +123,7 @@ resource "aws_security_group_rule" "auth_egress_allow_all_traffic" {
 
 // Network load balancer for auth server.
 resource "aws_lb" "auth" {
-  name               = "${var.cluster_name}-auth"
+  name               = "${substr(var.cluster_name,0,16)}-auth"
   internal           = true
   subnets            = [for subnet in aws_subnet.public : subnet.id]
   load_balancer_type = "network"
@@ -136,7 +136,7 @@ resource "aws_lb" "auth" {
 
 // Target group is associated with auto scale group
 resource "aws_lb_target_group" "auth" {
-  name     = "${var.cluster_name}-auth"
+  name     = "${substr(var.cluster_name,0,16)}-auth"
   port     = 3025
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
