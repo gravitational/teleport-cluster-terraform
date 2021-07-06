@@ -98,16 +98,16 @@ module "teleport-cluster-terraform" {
   license_path = local_file.license.filename
 
   # Instance type used for auth autoscaling group
-  auth_instance_type = "t3.micro"
+  auth_instance_type = "m4.xlarge"
 
   # Instance type used for proxy autoscaling group
-  proxy_instance_type = "t3.micro"
+  proxy_instance_type = "m4.xlarge"
 
   # Instance type used for node autoscaling group
-  node_instance_type = "t3.micro"
+  node_instance_type = "t3.medium"
 
   # Instance type used for monitor autoscaling group
-  monitor_instance_type = "t3.micro"
+  monitor_instance_type = "t3.medium"
 
   # AWS KMS alias used for encryption/decryption, defaults to alias used in SSM
   kms_alias_name = "alias/aws/ssm"
