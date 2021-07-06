@@ -146,4 +146,4 @@ If you're having trouble, check out [Teleport discussions](ttps://github.com/gra
 
 ## Public Teleport AMI IDs
 
-Please [see the AMIS.md file](https://github.com/gravitational/teleport/examples/aws/terraform/AMIS.md) for a list of public Teleport AMI IDs that you can use.
+Please [see the AMIS.md file](https://github.com/gravitational/teleport/blob/master/examples/aws/terraform/AMIS.md) for a list of public Teleport AMI IDs that you can use.
