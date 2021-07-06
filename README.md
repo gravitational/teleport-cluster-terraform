@@ -4,6 +4,8 @@ This repo contains a reference Terraform module which configures a production wo
 
 This cluster makes use of several AWS technologies, provisioned and configured using Terraform.
 
+This module is very similar functionally to the [ha-autoscale-cluster example](https://github.com/gravitational/teleport/tree/master/examples/aws/terraform/ha-autoscale-cluster) with updates to be used as a Terraform module and support Terraform 1.0+.
+
 ## Example module usage
 
 Write this content to `main.tf` in the directory where you want to keep your Terraform configs.
@@ -35,19 +37,19 @@ module "teleport-cluster-terraform" {
 
   # Teleport cluster name to set up
   # This cannot be changed later, so pick something descriptive
-  cluster_name = "gus-newterraform-acm"
+  cluster_name = "production-teleport-cluster"
 
   # SSH key name to provision instances with
   # This must be a key that already exists in the AWS account
-  key_name = "gus"
+  key_name = "ops"
 
   # AMI ID to use
   # See https://github.com/gravitational/teleport/blob/master/examples/aws/terraform/AMIS.md
-  ami_id = "ami-0e8e5a3c392fbe4b1"
+  ami_id = "ami-072f618d7d3e05cfc"
 
   # Account ID which owns the AMIs used to spin up instances
-  # You should only need to set this if you're building your own AMIs for testing purposes.
-  ami_owner_account_id = "278576220453"
+  # You should only need to set this if you're building your own AMIs.
+  #ami_owner_account_id = "123456789012"
 
   # Password for Grafana admin user
   # Grafana is hosted on https://<route53_domain>:8443
@@ -72,7 +74,7 @@ module "teleport-cluster-terraform" {
 
   # Domain name to use for Teleport proxies, e.g. proxy.example.com
   # This will be the domain that Teleport users will connect to via web UI or the tsh client
-  route53_domain = "gus-newterraform-acm.teleportdemo.net"
+  route53_domain = "production-teleport-cluster.teleportdemo.net"
 
   # Optional domain name to use for Teleport proxy NLB alias
   # When using ACM we have one ALB (for port 443 with TLS termination) and one NLB
@@ -80,15 +82,17 @@ module "teleport-cluster-terraform" {
   # As this NLB is at a different address, we add an alias record in Route 53 so that
   # it can be used by applications which connect to it directly (like kubectl) rather
   # than discovering the NLB's address through the Teleport API (like tsh does)
-  route53_domain_acm_nlb_alias = "gus-newterraform-acm-nlb.teleportdemo.net"
+  # Setting this also exposes port 443 on the alias domain to allow the use of Teleport's
+  # PostgreSQL listener for database access (with --insecure due to the lack of TLS cert)
+  route53_domain_acm_nlb_alias = "production-teleport-cluster-nlb.teleportdemo.net"
 
   # Email for LetsEncrypt domain registration
-  email = "gus@goteleport.com"
+  email = "my@email.address"
 
   # S3 bucket to create for encrypted LetsEncrypt certificates
   # This is also used for storing the Teleport license which is downloaded to auth servers
   # This cannot be a pre-existing bucket
-  s3_bucket_name = "gus-newterraform-acm-nlb.teleportdemo.net"
+  s3_bucket_name = "production-teleport-cluster.teleportdemo.net"
 
   # Path to Teleport Enterprise license file
   license_path = local_file.license.filename
@@ -122,7 +126,7 @@ module "teleport-cluster-terraform" {
 }
 ```
 
-Once this file is written, run `terraform init && terraform plan && terraform apply`
+Once this file is written, run `terraform init -upgrade && terraform plan && terraform apply`
 
 ## Prerequisites
 
