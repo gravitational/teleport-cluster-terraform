@@ -6,6 +6,8 @@ This cluster makes use of several AWS technologies, provisioned and configured u
 
 ## Example module usage
 
+Write this content to `main.tf` in the directory where you want to keep your Terraform configs.
+
 ```terraform
 # load license from file in local directory
 data "local_file" "license" {
@@ -119,6 +121,8 @@ module "teleport-cluster-terraform" {
   auth_type = "local"
 }
 ```
+
+Once this file is written, run `terraform init && terraform plan && terraform apply`
 
 ## Prerequisites
 
