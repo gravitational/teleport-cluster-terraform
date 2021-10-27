@@ -3,11 +3,12 @@
 // Setup for demo/testing purposes.
 resource "aws_autoscaling_group" "node" {
   name                      = "${var.cluster_name}-node"
+  count                     = 0
   max_size                  = 1000
-  min_size                  = 1
+  min_size                  = 0
   health_check_grace_period = 300
   health_check_type         = "EC2"
-  desired_capacity          = 1
+  desired_capacity          = 0
   force_delete              = false
   launch_configuration      = aws_launch_configuration.node.name
   vpc_zone_identifier       = [for subnet in aws_subnet.node : subnet.id]
@@ -49,6 +50,7 @@ resource "aws_launch_configuration" "node" {
     create_before_destroy = true
   }
   name_prefix                 = "${var.cluster_name}-node-"
+  count                       = 0
   image_id                    = var.ami_id
   instance_type               = var.node_instance_type
   user_data                   = templatefile(
