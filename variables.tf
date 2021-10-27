@@ -159,3 +159,9 @@ variable "ami_owner_account_id" {
   type    = string
   default = "126027368216"
 }
+
+// AMI KMS Key to use
+variable "ami_kms_key_arn" {
+  type = string
+  default = ""
+}
