@@ -10,7 +10,7 @@ resource "aws_autoscaling_group" "node" {
   health_check_type         = "EC2"
   desired_capacity          = 0
   force_delete              = false
-  launch_configuration      = aws_launch_configuration.node.name
+  launch_configuration      = aws_launch_configuration.node[0].name
   vpc_zone_identifier       = [for subnet in aws_subnet.node : subnet.id]
 
   tag {
