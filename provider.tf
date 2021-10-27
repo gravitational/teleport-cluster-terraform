@@ -20,6 +20,14 @@ terraform {
   }
 }
 
+provider "aws" {
+  default_tags {
+    tags = merge(var.aws_tags, {
+      TeleportCluster = var.cluster_name
+    })
+  }
+}
+
 variable "aws_max_retries" {
   default = 5
 }

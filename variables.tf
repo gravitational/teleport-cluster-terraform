@@ -4,6 +4,11 @@ variable "cluster_name" {
   type = string
 }
 
+# Default AWS tags that will be added to all resources by default (requires AWS provider verison > TODO ADD VERSION)
+variable "aws_tags" {
+  type = map(any)
+}
+
 # SSH key name to provision instances with
 # This must be a key that already exists in the AWS account
 variable "key_name" {
