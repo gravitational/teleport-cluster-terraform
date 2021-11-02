@@ -3,7 +3,7 @@
 // Setup for demo/testing purposes.
 resource "aws_autoscaling_group" "node" {
   name                      = "${var.cluster_name}-node"
-  max_size                  = 1000
+  max_size                  = 0
   min_size                  = 0
   health_check_grace_period = 300
   health_check_type         = "EC2"
