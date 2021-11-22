@@ -24,7 +24,7 @@ resource "aws_subnet" "public" {
   for_each          = var.az_list
 
   vpc_id            = local.vpc_id
-  cidr_block        = cidrsubnet(local.bastion_cidr, 4, var.az_number[substr(each.key, 9, 1)])
+  cidr_block        = cidrsubnet(local.bastion_cidr, 4, var.az_number[substr(each.key, -1, 1)])
   availability_zone = each.key
 
   tags = {
