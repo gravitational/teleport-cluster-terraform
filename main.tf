@@ -88,3 +88,13 @@ moved {
   from = aws_nat_gateway.teleport[1]
   to = aws_nat_gateway.teleport["us-west-2b"]
 }
+
+moved {
+  from = aws_eip.nat[0]
+  to = aws_eip.nat["us-west-2a"]
+}
+
+moved {
+  from = aws_eip.nat[1]
+  to = aws_eip.nat["us-west-2b"]
+}
