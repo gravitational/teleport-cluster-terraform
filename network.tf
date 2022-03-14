@@ -31,6 +31,10 @@ resource "aws_subnet" "public" {
     Name            = "teleport-public-${each.key}"
     TeleportCluster = var.cluster_name
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Creates a list which we can use to pick one subnet of all those created

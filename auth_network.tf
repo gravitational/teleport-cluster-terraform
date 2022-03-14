@@ -32,6 +32,10 @@ resource "aws_subnet" "auth" {
     Name            = "teleport-auth-${each.key}"
     TeleportCluster = var.cluster_name
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_route_table_association" "auth" {
@@ -153,4 +157,3 @@ resource "aws_lb_listener" "auth" {
     type             = "forward"
   }
 }
-

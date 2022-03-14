@@ -31,6 +31,10 @@ resource "aws_subnet" "node" {
     Name            = "teleport-node-${each.key}"
     TeleportCluster = var.cluster_name
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_route_table_association" "node" {
