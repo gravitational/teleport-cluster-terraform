@@ -3,8 +3,9 @@
 
 // Proxy SG for instances behind network LB
 resource "aws_security_group" "proxy" {
-  name   = "${substr(var.cluster_name,0,16)}-proxy"
-  vpc_id = local.vpc_id
+  name        = "${substr(var.cluster_name, 0, 16)}-proxy"
+  description = "Proxy SG for instances behind network LB"
+  vpc_id      = local.vpc_id
   tags = {
     TeleportCluster = var.cluster_name
   }
@@ -12,9 +13,10 @@ resource "aws_security_group" "proxy" {
 
 // Proxy SG for application LB (ACM)
 resource "aws_security_group" "proxy_acm" {
-  name   = "${substr(var.cluster_name,0,16)}-proxy-acm"
-  vpc_id = local.vpc_id
-  count  = var.use_acm ? 1 : 0
+  name        = "${substr(var.cluster_name, 0, 16)}-proxy-acm"
+  description = "Proxy SG for application LB (ACM)"
+  vpc_id      = local.vpc_id
+  count       = var.use_acm ? 1 : 0
   tags = {
     TeleportCluster = var.cluster_name
   }
@@ -22,6 +24,7 @@ resource "aws_security_group" "proxy_acm" {
 
 // SSH emergency access via bastion only
 resource "aws_security_group_rule" "proxy_ingress_allow_ssh" {
+  description              = "SSH emergency access via bastion only"
   type                     = "ingress"
   from_port                = 22
   to_port                  = 22
@@ -31,7 +34,9 @@ resource "aws_security_group_rule" "proxy_ingress_allow_ssh" {
 }
 
 // Ingress traffic to web port 443 is allowed from all directions (ACM)
+// tfsec:ignore:aws-ec2-no-public-ingress-sgr
 resource "aws_security_group_rule" "proxy_ingress_allow_web_acm" {
+  description       = "Ingress traffic to web port 443 is allowed from all directions (ACM)"
   type              = "ingress"
   from_port         = 443
   to_port           = 443
@@ -42,7 +47,9 @@ resource "aws_security_group_rule" "proxy_ingress_allow_web_acm" {
 }
 
 // Ingress proxy traffic is allowed from all ports
+// tfsec:ignore:aws-ec2-no-public-ingress-sgr
 resource "aws_security_group_rule" "proxy_ingress_allow_proxy" {
+  description       = "Ingress proxy traffic is allowed from all ports"
   type              = "ingress"
   from_port         = 3023
   to_port           = 3023
@@ -52,7 +59,9 @@ resource "aws_security_group_rule" "proxy_ingress_allow_proxy" {
 }
 
 // Ingress traffic to tunnel port 3024 is allowed from all directions (ACM)
+// tfsec:ignore:aws-ec2-no-public-ingress-sgr
 resource "aws_security_group_rule" "proxy_ingress_allow_tunnel" {
+  description       = "Ingress traffic to tunnel port 3024 is allowed from all directions (ACM)"
   type              = "ingress"
   from_port         = 3024
   to_port           = 3024
@@ -63,7 +72,9 @@ resource "aws_security_group_rule" "proxy_ingress_allow_tunnel" {
 }
 
 // Ingress traffic to web port 3026 is allowed from all directions
+// tfsec:ignore:aws-ec2-no-public-ingress-sgr
 resource "aws_security_group_rule" "proxy_ingress_allow_kube" {
+  description       = "Ingress traffic to web port 3026 is allowed from all directions"
   type              = "ingress"
   from_port         = 3026
   to_port           = 3026
@@ -73,7 +84,9 @@ resource "aws_security_group_rule" "proxy_ingress_allow_kube" {
 }
 
 // Ingress traffic to web port 3080 is allowed from all directions
+// tfsec:ignore:aws-ec2-no-public-ingress-sgr
 resource "aws_security_group_rule" "proxy_ingress_allow_web" {
+  description       = "Ingress traffic to web port 3080 is allowed from all directions"
   type              = "ingress"
   from_port         = 3080
   to_port           = 3080
@@ -83,7 +96,9 @@ resource "aws_security_group_rule" "proxy_ingress_allow_web" {
 }
 
 // Ingress traffic to grafana port 8443 is allowed from all directions (ACM)
+// tfsec:ignore:aws-ec2-no-public-ingress-sgr
 resource "aws_security_group_rule" "proxy_ingress_allow_grafana_acm" {
+  description       = "Ingress traffic to grafana port 8443 is allowed from all directions (ACM)"
   type              = "ingress"
   from_port         = 8443
   to_port           = 8443
@@ -94,7 +109,9 @@ resource "aws_security_group_rule" "proxy_ingress_allow_grafana_acm" {
 }
 
 // Egress traffic is allowed everywhere
+// tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "proxy_egress_allow_all_traffic" {
+  description       = "Egress traffic is allowed everywhere"
   type              = "egress"
   from_port         = 0
   to_port           = 0
@@ -104,7 +121,9 @@ resource "aws_security_group_rule" "proxy_egress_allow_all_traffic" {
 }
 
 // Egress traffic is allowed everywhere (ACM)
+// tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "proxy_egress_allow_all_traffic_acm" {
+  description       = "Egress traffic is allowed everywhere (ACM)"
   type              = "egress"
   from_port         = 0
   to_port           = 0
@@ -115,13 +134,15 @@ resource "aws_security_group_rule" "proxy_egress_allow_all_traffic_acm" {
 }
 
 // Network load balancer for proxy server
+// Expected to be public-facing
+// tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "proxy" {
-  name                              = "${var.cluster_name}-proxy"
-  internal                          = false
-  subnets                           = [for subnet in aws_subnet.public : subnet.id]
-  load_balancer_type                = "network"
-  idle_timeout                      = 3600
-  enable_cross_zone_load_balancing  = true
+  name                             = "${var.cluster_name}-proxy"
+  internal                         = false
+  subnets                          = [for subnet in aws_subnet.public : subnet.id]
+  load_balancer_type               = "network"
+  idle_timeout                     = 3600
+  enable_cross_zone_load_balancing = true
 
   tags = {
     TeleportCluster = var.cluster_name
@@ -129,14 +150,17 @@ resource "aws_lb" "proxy" {
 }
 
 // Application load balancer for proxy server web interface (using ACM)
+// Expected to be public-facing
+// tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "proxy_acm" {
-  name               = "${var.cluster_name}-proxy-acm"
-  internal           = false
-  subnets            = [for subnet in aws_subnet.public : subnet.id]
-  load_balancer_type = "application"
-  idle_timeout       = 3600
-  security_groups    = [aws_security_group.proxy_acm[0].id]
-  count              = var.use_acm ? 1 : 0
+  name                       = "${var.cluster_name}-proxy-acm"
+  internal                   = false
+  subnets                    = [for subnet in aws_subnet.public : subnet.id]
+  load_balancer_type         = "application"
+  idle_timeout               = 3600
+  drop_invalid_header_fields = true
+  security_groups            = [aws_security_group.proxy_acm[0].id]
+  count                      = var.use_acm ? 1 : 0
   tags = {
     TeleportCluster = var.cluster_name
   }
@@ -164,7 +188,7 @@ resource "aws_lb_listener" "proxy_proxy" {
 // Tunnel endpoint/listener on LB - this is only used with ACM (as
 // Teleport web/tunnel multiplexing can be used with Letsencrypt)
 resource "aws_lb_target_group" "proxy_tunnel_acm" {
-  name     = "${substr(var.cluster_name,0,16)}-proxy-tunnel"
+  name     = "${substr(var.cluster_name, 0, 16)}-proxy-tunnel"
   port     = 3024
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -185,7 +209,7 @@ resource "aws_lb_listener" "proxy_tunnel_acm" {
 
 // Proxy is for Kube proxy - jumphost target endpoint.
 resource "aws_lb_target_group" "proxy_kube" {
-  name     = "${substr(var.cluster_name,0,16)}-proxy-kube"
+  name     = "${substr(var.cluster_name, 0, 16)}-proxy-kube"
   port     = 3026
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -207,7 +231,7 @@ resource "aws_lb_listener" "proxy_kube" {
 
 // Proxy web target group (using letsencrypt)
 resource "aws_lb_target_group" "proxy_web" {
-  name     = "${substr(var.cluster_name,0,16)}-proxy-web"
+  name     = "${substr(var.cluster_name, 0, 16)}-proxy-web"
   port     = 3080
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -227,7 +251,7 @@ resource "aws_lb_listener" "proxy_web" {
 
 // Proxy web target group (using ACM)
 resource "aws_lb_target_group" "proxy_web_acm" {
-  name     = "${substr(var.cluster_name,0,16)}-proxy-webacm"
+  name     = "${substr(var.cluster_name, 0, 16)}-proxy-webacm"
   port     = 3080
   vpc_id   = aws_vpc.teleport.id
   protocol = "HTTPS"
@@ -255,9 +279,9 @@ resource "aws_lb_listener" "proxy_web_acm" {
 
 // This is a small hack to expose grafana over web port 8443
 // feel free to remove it or replace with something else
-// letsencrypt
+// Let's Encrypt
 resource "aws_lb_target_group" "proxy_grafana" {
-  name     = "${substr(var.cluster_name,0,16)}-proxy-grafana"
+  name     = "${substr(var.cluster_name, 0, 16)}-proxy-grafana"
   port     = 8443
   vpc_id   = aws_vpc.teleport.id
   protocol = "TCP"
@@ -278,7 +302,7 @@ resource "aws_lb_listener" "proxy_grafana" {
 
 // ACM
 resource "aws_lb_target_group" "proxy_grafana_acm" {
-  name     = "${substr(var.cluster_name,0,16)}-proxy-grafana"
+  name     = "${substr(var.cluster_name, 0, 16)}-proxy-grafana"
   port     = 8444
   vpc_id   = aws_vpc.teleport.id
   protocol = "HTTP"
@@ -297,4 +321,3 @@ resource "aws_lb_listener" "proxy_grafana_acm" {
     type             = "forward"
   }
 }
-

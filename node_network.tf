@@ -13,7 +13,7 @@ resource "aws_route_table" "node" {
 
 // Route all outbound traffic through NAT gateway
 resource "aws_route" "node" {
-  for_each               = aws_route_table.node
+  for_each = aws_route_table.node
 
   route_table_id         = each.value.id
   destination_cidr_block = "0.0.0.0/0"
@@ -22,7 +22,7 @@ resource "aws_route" "node" {
 }
 
 resource "aws_subnet" "node" {
-  for_each          = var.az_list
+  for_each = var.az_list
 
   vpc_id            = local.vpc_id
   cidr_block        = cidrsubnet(local.node_cidr, 4, var.az_number[substr(each.key, 9, 1)])
@@ -34,7 +34,7 @@ resource "aws_subnet" "node" {
 }
 
 resource "aws_route_table_association" "node" {
-  for_each       = aws_subnet.node
+  for_each = aws_subnet.node
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.node[each.key].id
@@ -44,8 +44,9 @@ resource "aws_route_table_association" "node" {
 // and only allow traffic comming in from proxies or
 // emergency access bastions
 resource "aws_security_group" "node" {
-  name   = "${var.cluster_name}-node"
-  vpc_id = local.vpc_id
+  name        = "${var.cluster_name}-node"
+  description = "SG for ${var.cluster_name}-node"
+  vpc_id      = local.vpc_id
   tags = {
     TeleportCluster = var.cluster_name
   }
@@ -53,6 +54,7 @@ resource "aws_security_group" "node" {
 
 // SSH access is allowed via bastions and proxies
 resource "aws_security_group_rule" "node_ingress_allow_ssh_bastion" {
+  description              = "Allow SSH access via bastion"
   type                     = "ingress"
   from_port                = 22
   to_port                  = 22
@@ -62,6 +64,7 @@ resource "aws_security_group_rule" "node_ingress_allow_ssh_bastion" {
 }
 
 resource "aws_security_group_rule" "node_ingress_allow_ssh_proxy" {
+  description              = "Allow SSH access via proxy"
   type                     = "ingress"
   from_port                = 3022
   to_port                  = 3022
@@ -70,7 +73,9 @@ resource "aws_security_group_rule" "node_ingress_allow_ssh_proxy" {
   source_security_group_id = aws_security_group.proxy.id
 }
 
+// tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "node_egress_allow_all_traffic" {
+  description       = "Allow all egress traffic"
   type              = "egress"
   from_port         = 0
   to_port           = 0
