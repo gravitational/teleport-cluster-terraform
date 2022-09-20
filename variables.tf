@@ -24,7 +24,7 @@ variable "grafana_pass" {
 # Whether to use Amazon-issued certificates via ACM or not
 # This must be set to true for any use of ACM whatsoever, regardless of whether Terraform generates/approves the cert
 variable "use_acm" {
-  type = string
+  type = bool
 }
 
 # List of AZs to spawn auth/proxy instances in
@@ -41,7 +41,7 @@ variable "vpc_cidr" {
   default = "10.10.0.0/16"
 }
 
-# DNS and LetsEncrypt integration variables
+# DNS and Let's Encrypt integration variables
 
 # Zone name which will host DNS records, e.g. example.com
 # This must already be configured in Route 53
@@ -62,16 +62,16 @@ variable "route53_domain" {
 # it can be used by applications which connect to it directly (like kubectl) rather
 # than discovering the NLB's address through the Teleport API (like tsh does)
 variable "route53_domain_acm_nlb_alias" {
-  type = string
+  type    = string
   default = ""
 }
 
-# Email for LetsEncrypt domain registration
+# Email for Let's Encrypt domain registration
 variable "email" {
   type = string
 }
 
-# S3 bucket to create for encrypted LetsEncrypt certificates
+# S3 bucket to create for encrypted Let's Encrypt certificates
 # This is also used for storing the Teleport license which is downloaded to auth servers
 variable "s3_bucket_name" {
   type = string
@@ -109,6 +109,7 @@ variable "monitor_instance_type" {
 
 # AWS KMS alias used for encryption/decryption, defaults to alias used in SSM
 variable "kms_alias_name" {
+  type    = string
   default = "alias/aws/ssm"
 }
 

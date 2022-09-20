@@ -1,6 +1,6 @@
 # `teleport-cluster-terraform`
 
-This repo contains a reference Terraform module which configures a production worthy high-availability auto-scaling Teleport Cluster.
+This repo contains a reference Terraform module that configures a production-worthy high-availability auto-scaling Teleport Cluster.
 
 This cluster makes use of several AWS technologies, provisioned and configured using Terraform.
 
@@ -16,7 +16,7 @@ data "local_file" "license" {
     filename = "/Users/gus/Downloads/teleport/license.pem"
 }
 
-# alternatvely, load the license from a variable and write the file locally
+# alternatively, load the license from a variable and write the file locally
 # resource "local_file" "license" {
 #   sensitive_content = var.teleport_license
 #   filename          = "/tmp/license.pem"
@@ -86,11 +86,11 @@ module "teleport-cluster-terraform" {
   # PostgreSQL listener for database access (with --insecure due to the lack of TLS cert)
   route53_domain_acm_nlb_alias = "production-teleport-cluster-nlb.teleportdemo.net"
 
-  # Email for LetsEncrypt domain registration
+  # Email for Let's Encrypt domain registration
   email = "my@email.address"
 
-  # S3 bucket to create for encrypted LetsEncrypt certificates
-  # This is also used for storing the Teleport license which is downloaded to auth servers
+  # S3 bucket to create for encrypted Let's Encrypt certificates
+  # This is also used for storing the Teleport license that is downloaded to auth servers
   # This cannot be a pre-existing bucket
   s3_bucket_name = "production-teleport-cluster.teleportdemo.net"
 
@@ -133,16 +133,16 @@ Once this file is written, run `terraform init -upgrade && terraform plan && ter
 We recommend familiarizing yourself with the following resources prior to reviewing our Terraform examples:
 
 - [Teleport Architecture](https://goteleport.com/docs/architecture/overview/)
-- [Admin Guide](https://goteleport.com/docs/admin-guide/)
+- [Admin Guide](https://goteleport.com/docs/management/admin/)
 
 In order to spin up AWS resources using these Terraform examples, you need the following software:
 
-- terraform v0.13+ [install docs](https://learn.hashicorp.com/terraform/getting-started/install.html)
-- awscli v1.14+ [install docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+- terraform v1.0+ [install docs](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+- awscli v1.14+ [install docs](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ## How to get help
 
-If you're having trouble, check out [Teleport discussions](ttps://github.com/gravitational/teleport/discussions).
+If you're having trouble, check out [Teleport discussions](https://github.com/gravitational/teleport/discussions).
 
 ## Public Teleport AMI IDs
 

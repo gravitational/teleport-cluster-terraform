@@ -12,7 +12,7 @@ resource "aws_vpc" "teleport" {
 resource "aws_eip" "nat" {
   for_each = var.az_list
 
-  vpc   = true
+  vpc = true
   tags = {
     TeleportCluster = var.cluster_name
   }
@@ -28,7 +28,7 @@ resource "aws_internet_gateway" "teleport" {
 
 // Creates nat gateway per availability zone
 resource "aws_nat_gateway" "teleport" {
-  for_each      = var.az_list
+  for_each = var.az_list
 
   allocation_id = aws_eip.nat[each.key].id
   subnet_id     = aws_subnet.public[each.key].id
@@ -49,10 +49,10 @@ locals {
 
   # Break up the VPC CIDR into chunks according to different instance type
   # This helps to avoid subnet CIDR conflicts if/when AZs change
-  auth_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.auth)
+  auth_cidr    = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.auth)
   bastion_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.bastion)
-  node_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.node)
-  monitor_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.monitor)
-  proxy_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.proxy)
+  node_cidr    = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.node)
+  monitor_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.monitor) # tflint-ignore: terraform_unused_declarations
+  proxy_cidr   = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.proxy) # tflint-ignore: terraform_unused_declarations
 }
 

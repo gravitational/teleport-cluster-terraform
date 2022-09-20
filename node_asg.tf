@@ -38,10 +38,10 @@ resource "aws_launch_configuration" "node" {
   lifecycle {
     create_before_destroy = true
   }
-  name_prefix                 = "${var.cluster_name}-node-"
-  image_id                    = var.ami_id
-  instance_type               = var.node_instance_type
-  user_data                   = templatefile(
+  name_prefix   = "${var.cluster_name}-node-"
+  image_id      = var.ami_id
+  instance_type = var.node_instance_type
+  user_data = templatefile(
     "${path.module}/node-user-data.tpl",
     {
       region           = data.aws_region.current.name
@@ -52,6 +52,12 @@ resource "aws_launch_configuration" "node" {
       use_acm          = var.use_acm
     }
   )
+  metadata_options {
+    http_tokens = "required"
+  }
+  root_block_device {
+    encrypted = true
+  }
   key_name                    = var.key_name
   associate_public_ip_address = false
   security_groups             = [aws_security_group.node.id]
