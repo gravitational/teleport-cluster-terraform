@@ -6,7 +6,7 @@ resource "aws_security_group" "proxy" {
   name        = "${substr(var.cluster_name, 0, 16)}-proxy"
   description = "Proxy SG for instances behind network LB"
   vpc_id      = local.vpc_id
-  tags = {
+  tags        = {
     TeleportCluster = var.cluster_name
   }
 }
@@ -17,9 +17,19 @@ resource "aws_security_group" "proxy_acm" {
   description = "Proxy SG for application LB (ACM)"
   vpc_id      = local.vpc_id
   count       = var.use_acm ? 1 : 0
-  tags = {
+  tags        = {
     TeleportCluster = var.cluster_name
   }
+  tags_all = {
+    "Name"            = "teleport-auth-us-west-2a"
+    "TeleportCluster" = "infra-dev"
+  }
+  ipv6_native                                    = false
+  map_customer_owned_ip_on_launch                = false
+  enable_resource_name_dns_aaaa_record_on_launch = false
+  enable_resource_name_dns_a_record_on_launch    = false
+  enable_dns64                                   = false
+  private_dns_hostname_type_on_launch            = "ip-name"
 }
 
 // SSH emergency access via bastion only
@@ -161,7 +171,7 @@ resource "aws_lb" "proxy_acm" {
   drop_invalid_header_fields = true
   security_groups            = [aws_security_group.proxy_acm[0].id]
   count                      = var.use_acm ? 1 : 0
-  tags = {
+  tags                       = {
     TeleportCluster = var.cluster_name
   }
 }

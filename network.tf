@@ -9,6 +9,16 @@ resource "aws_route_table" "public" {
     Name            = "teleport-public-${each.key}"
     TeleportCluster = var.cluster_name
   }
+  tags_all = {
+    "Name"            = "teleport-auth-us-west-2a"
+    "TeleportCluster" = "infra-dev"
+  }
+  ipv6_native                                    = false
+  map_customer_owned_ip_on_launch                = false
+  enable_resource_name_dns_aaaa_record_on_launch = false
+  enable_resource_name_dns_a_record_on_launch    = false
+  enable_dns64                                   = false
+  private_dns_hostname_type_on_launch            = "ip-name"
 }
 
 resource "aws_route" "public_gateway" {

@@ -5,7 +5,7 @@ resource "aws_route_table" "node" {
   for_each = var.az_list
 
   vpc_id = local.vpc_id
-  tags = {
+  tags   = {
     Name            = "teleport-node-${each.key}"
     TeleportCluster = var.cluster_name
   }
@@ -27,10 +27,20 @@ resource "aws_subnet" "node" {
   vpc_id            = local.vpc_id
   cidr_block        = cidrsubnet(local.node_cidr, 4, var.az_number[substr(each.key, 9, 1)])
   availability_zone = each.key
-  tags = {
+  tags              = {
     Name            = "teleport-node-${each.key}"
     TeleportCluster = var.cluster_name
   }
+  tags_all = {
+    "Name"            = "teleport-auth-us-west-2a"
+    "TeleportCluster" = "infra-dev"
+  }
+  ipv6_native                                    = false
+  map_customer_owned_ip_on_launch                = false
+  enable_resource_name_dns_aaaa_record_on_launch = false
+  enable_resource_name_dns_a_record_on_launch    = false
+  enable_dns64                                   = false
+  private_dns_hostname_type_on_launch            = "ip-name"
 }
 
 resource "aws_route_table_association" "node" {
@@ -47,7 +57,7 @@ resource "aws_security_group" "node" {
   name        = "${var.cluster_name}-node"
   description = "SG for ${var.cluster_name}-node"
   vpc_id      = local.vpc_id
-  tags = {
+  tags        = {
     TeleportCluster = var.cluster_name
   }
 }
