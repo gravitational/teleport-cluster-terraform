@@ -1,15 +1,3 @@
-# Base AMI is found by ID - this is to prevent issues where launch configurations
-# are changed and ASGs recreated because the AMI ID gets updated externally
-data "aws_ami" "base" {
-  most_recent = true
-  owners      = [var.ami_owner_account_id]
-
-  filter {
-    name   = "image-id"
-    values = [var.ami_id]
-  }
-}
-
 # Used in role ARNs
 data "aws_caller_identity" "current" {}
 
