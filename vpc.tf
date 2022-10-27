@@ -53,6 +53,6 @@ locals {
   bastion_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.bastion)
   node_cidr    = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.node)
   monitor_cidr = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.monitor) # tflint-ignore: terraform_unused_declarations
-  proxy_cidr   = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.proxy) # tflint-ignore: terraform_unused_declarations
+  proxy_cidr   = cidrsubnet(var.vpc_cidr, 4, var.az_subnet_type.proxy)   # tflint-ignore: terraform_unused_declarations
 }
 
