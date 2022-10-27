@@ -17,7 +17,7 @@ variable "grafana_version" {
 
 # Assign a number to each AZ letter used in our configuration
 variable "az_number" {
-  type    = map
+  type = map(any)
   default = {
     a = 1
     b = 2
@@ -33,7 +33,7 @@ variable "az_number" {
 # Assign a number to each different subnet type that we use
 # This helps avoid conflicts across different availability zones
 variable "az_subnet_type" {
-  type    = map
+  type = map(any)
   default = {
     bastion = 1
     auth    = 2
