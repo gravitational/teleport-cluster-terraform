@@ -67,7 +67,8 @@ resource "aws_launch_configuration" "auth" {
     }
   )
   metadata_options {
-    http_tokens = "required"
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
   root_block_device {
     encrypted = true
