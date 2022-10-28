@@ -18,16 +18,26 @@ resource "aws_acm_certificate" "cert" {
 }
 
 resource "aws_route53_record" "cert_validation" {
-  name    = tolist(aws_acm_certificate.cert[0].domain_validation_options)[0].resource_record_name
-  type    = tolist(aws_acm_certificate.cert[0].domain_validation_options)[0].resource_record_type
-  zone_id = data.aws_route53_zone.proxy.zone_id
-  records = [tolist(aws_acm_certificate.cert[0].domain_validation_options)[0].resource_record_value]
-  ttl     = 60
-  count   = var.use_acm ? 1 : 0
+  for_each = {
+  for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
+    name   = dvo.resource_record_name
+    record = dvo.resource_record_value
+    type   = dvo.resource_record_type
+  }
+  }
+  name            = each.value.name
+  records         = [each.value.record]
+  type            = each.value.type
+  allow_overwrite = true
+  zone_id         = data.aws_route53_zone.proxy.zone_id
+
+  depends_on = [
+    aws_acm_certificate.cert
+  ]
 }
 
 resource "aws_acm_certificate_validation" "cert" {
   certificate_arn         = aws_acm_certificate.cert[0].arn
-  validation_record_fqdns = [aws_route53_record.cert_validation[0].fqdn]
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
   count                   = var.use_acm ? 1 : 0
 }
