@@ -83,6 +83,12 @@ variable "license_path" {
   default = ""
 }
 
+variable "teleport_license" {
+  type      = string
+  default   = ""
+  sensitive = true
+}
+
 # Instance type used for auth autoscaling group
 variable "auth_instance_type" {
   type    = string

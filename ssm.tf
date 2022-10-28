@@ -3,10 +3,10 @@
 // is destroyed, cluster will overwrite them with real values
 
 resource "aws_ssm_parameter" "license" {
-  count     = var.license_path != "" ? 1 : 0
+  count     = var.teleport_license != "" ? 1 : 0
   name      = "/teleport/${var.cluster_name}/license"
   type      = "SecureString"
-  value     = data.local_file.license.content
+  value     = var.teleport_license
   overwrite = true
 }
 
