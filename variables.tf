@@ -83,6 +83,7 @@ variable "license_path" {
   default = ""
 }
 
+# Contents of the Teleport Enterprise license to be used for the cluster
 variable "teleport_license" {
   type      = string
   default   = ""
