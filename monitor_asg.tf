@@ -85,7 +85,7 @@ resource "aws_launch_configuration" "monitor" {
   name_prefix   = "${var.cluster_name}-monitor-"
   image_id      = var.ami_id
   instance_type = var.monitor_instance_type
-  user_data = templatefile(
+  user_data     = templatefile(
     "${path.module}/monitor-user-data.tpl",
     {
       region           = data.aws_region.current.name
@@ -99,7 +99,8 @@ resource "aws_launch_configuration" "monitor" {
     }
   )
   metadata_options {
-    http_tokens = "required"
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
   root_block_device {
     encrypted = true
@@ -116,7 +117,7 @@ resource "aws_security_group" "monitor" {
   name        = "${var.cluster_name}-monitor"
   description = "SG for ${var.cluster_name}-monitor"
   vpc_id      = local.vpc_id
-  tags = {
+  tags        = {
     TeleportCluster = var.cluster_name
   }
 }

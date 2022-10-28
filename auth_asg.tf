@@ -47,7 +47,7 @@ resource "aws_launch_configuration" "auth" {
   name_prefix   = "${substr(var.cluster_name, 0, 16)}-auth-"
   image_id      = var.ami_id
   instance_type = var.auth_instance_type
-  user_data = templatefile(
+  user_data     = templatefile(
     "${path.module}/auth-user-data.tpl",
     {
       region                   = data.aws_region.current.name
@@ -67,7 +67,8 @@ resource "aws_launch_configuration" "auth" {
     }
   )
   metadata_options {
-    http_tokens = "required"
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
   root_block_device {
     encrypted = true

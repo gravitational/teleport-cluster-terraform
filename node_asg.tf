@@ -41,7 +41,7 @@ resource "aws_launch_configuration" "node" {
   name_prefix   = "${var.cluster_name}-node-"
   image_id      = var.ami_id
   instance_type = var.node_instance_type
-  user_data = templatefile(
+  user_data     = templatefile(
     "${path.module}/node-user-data.tpl",
     {
       region           = data.aws_region.current.name
@@ -53,7 +53,8 @@ resource "aws_launch_configuration" "node" {
     }
   )
   metadata_options {
-    http_tokens = "required"
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
   root_block_device {
     encrypted = true
