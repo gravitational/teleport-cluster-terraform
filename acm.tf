@@ -30,7 +30,6 @@ resource "aws_route53_record" "cert_validation" {
   type            = each.value.type
   allow_overwrite = true
   zone_id         = data.aws_route53_zone.proxy.zone_id
-  count           = var.use_acm ? 1 : 0
 
   depends_on = [
     aws_acm_certificate.cert
