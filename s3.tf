@@ -6,10 +6,10 @@ resource "aws_s3_bucket" "certs" {
   force_destroy = true
 }
 
-resource "aws_s3_bucket_acl" "certs" {
-  bucket = aws_s3_bucket.certs.bucket
-  acl    = "private"
-}
+# resource "aws_s3_bucket_acl" "certs" {
+#   bucket = aws_s3_bucket.certs.bucket
+#   acl    = "private"
+# }
 
 // For demo purposes, CMK is not needed
 // tfsec:ignore:aws-s3-encryption-customer-key
