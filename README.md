@@ -12,19 +12,19 @@ Write this content to `main.tf` in the directory where you want to keep your Ter
 
 ```terraform
 # load license from file in local directory
-data "local_file" "license" {
+data "local_sensitive_file" "license" {
     filename = "/Users/gus/Downloads/teleport/license.pem"
 }
 
 # alternatively, load the license from a variable and write the file locally
-# resource "local_file" "license" {
-#   sensitive_content = var.teleport_license
-#   filename          = "/tmp/license.pem"
+# resource "local_sensitive_file" "license" {
+#   content   = var.teleport_license
+#   filename  = "/tmp/license.pem"
 # }
 
 # create license resource (which the module depends on)
-resource "local_file" "license" {
-    sensitive_content = data.local_file.license.content
+resource "local_sensitive_file" "license" {
+    content  = data.local_file.license.content
     filename = "${path.module}/license.pem"
 }
 
@@ -33,7 +33,7 @@ module "teleport-cluster-terraform" {
   source = "github.com/gravitational/teleport-cluster-terraform"
 
   # the license file must be created first, because the module needs to load it
-  depends_on = [local_file.license]
+  depends_on = [local_sensitive_file.license]
 
   # Teleport cluster name to set up
   # This cannot be changed later, so pick something descriptive
@@ -95,7 +95,10 @@ module "teleport-cluster-terraform" {
   s3_bucket_name = "production-teleport-cluster.teleportdemo.net"
 
   # Path to Teleport Enterprise license file
-  license_path = local_file.license.filename
+  license_path = local_sensitive_file.license.filename
+  
+  # Contents of Teleport Enterprise license file
+  teleport_license = local_sensitive_file.license.content
 
   # Instance type used for auth autoscaling group
   auth_instance_type = "m4.xlarge"
