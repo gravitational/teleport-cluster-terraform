@@ -49,7 +49,7 @@ resource "aws_security_group_rule" "bastion_ingress_allow_ssh" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.bastion_sg_allowed_cidrs
   security_group_id = aws_security_group.bastion.id
 }
 

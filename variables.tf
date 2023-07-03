@@ -41,6 +41,20 @@ variable "vpc_cidr" {
   default = "10.10.0.0/16"
 }
 
+# CIDR to use in the Security Group that controls access to the monitor
+# This must be at least a /16
+variable "monitor_sg_allowed_cidrs" {
+  type    = list(string)
+  default = ["0.0.0.0/0"]
+}
+
+# CIDR to use in the Security Group that controls access to the SSH on the bastion host
+# This must be at least a /16
+variable "bastion_sg_allowed_cidrs" {
+  type    = list(string)
+  default = ["0.0.0.0/0"]
+}
+
 # DNS and Let's Encrypt integration variables
 
 # Zone name which will host DNS records, e.g. example.com

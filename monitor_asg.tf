@@ -141,7 +141,7 @@ resource "aws_security_group_rule" "monitor_ingress_allow_web" {
   from_port         = 8443
   to_port           = 8443
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.monitor_sg_allowed_cidrs
   security_group_id = aws_security_group.monitor.id
   count             = var.use_acm ? 0 : 1
 }
@@ -154,7 +154,7 @@ resource "aws_security_group_rule" "monitor_ingress_allow_web_acm" {
   from_port         = 8444
   to_port           = 8444
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.monitor_sg_allowed_cidrs
   security_group_id = aws_security_group.monitor.id
   count             = var.use_acm ? 1 : 0
 }
