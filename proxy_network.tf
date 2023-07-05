@@ -103,7 +103,7 @@ resource "aws_security_group_rule" "proxy_ingress_allow_grafana_acm" {
   from_port         = 8443
   to_port           = 8443
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.monitor_sg_allowed_cidrs
   security_group_id = aws_security_group.proxy_acm[0].id
   count             = var.use_acm ? 1 : 0
 }
