@@ -1,5 +1,8 @@
 # `teleport-cluster-terraform`
 
+> [!IMPORTANT]
+This code in this repo is deprecated.  Please use the code at https://github.com/gravitational/teleport/tree/master/examples/aws/terraform instead.
+
 This repo contains a reference Terraform module that configures a production-worthy high-availability auto-scaling Teleport Cluster.
 
 This cluster makes use of several AWS technologies, provisioned and configured using Terraform.
